@@ -1,0 +1,15 @@
+{
+    "name": "canil-bot",
+    "version": "1.0.0",
+    "description": "Sistema de atendimento automatizado para canil",
+    "main": "server.js",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "express": "^4.18.2",
+      "socket.io": "^4.5.4",
+      "venom-bot": "^5.0.0",
+      "sqlite3": "^5.1.6"
+    }
+  }

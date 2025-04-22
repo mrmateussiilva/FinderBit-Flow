@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mensagens do WhatsApp</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    #messages {
+      list-style: none;
+      padding: 0;
+    }
+    .message {
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      max-width: 70%;
+    }
+    .message.received {
+      background: #fff;
+      margin-right: 20%;
+    }
+    .message.sent {
+      background: #d4f4d4;
+      margin-left: 20%;
+      margin-right: 5%;
+    }
+    .message.bot {
+      background: #d4e4ff;
+      margin-left: 20%;
+      margin-right: 5%;
+    }
+    .message .from {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    .message .body {
+      margin: 5px 0;
+      color: #555;
+    }
+    .message .timestamp {
+      font-size: 0.8em;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mensagens do WhatsApp</h1>
+  <ul id="messages"></ul>
+
+  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+    const messagesList = document.getElementById('messages');
+    const renderedMessages = new Set(); // Cache no frontend para evitar duplicatas
+
+    socket.on('newMessage', (msg) => {
+      // Verificar se a mensagem já foi renderizada
+      if (renderedMessages.has(msg.id)) {
+        console.log(`Mensagem duplicada ignorada no frontend: ${msg.id}`);
+        return;
+      }
+
+      // Adicionar ao cache
+      renderedMessages.add(msg.id);
+
+      const li = document.createElement('li');
+      li.className = `message ${msg.isBot ? 'bot' : msg.isSent ? 'sent' : 'received'}`;
+      li.dataset.messageId = msg.id; // Armazenar ID para referência
+      li.innerHTML = `
+        <div class="from">${msg.isBot ? 'Bot para ' + msg.to : msg.isSent ? 'Enviada para ' + msg.to : 'Recebida de ' + msg.from}</div>
+        <div class="body">${msg.body}</div>
+        <div class="timestamp">${msg.timestamp}</div>
+      `;
+      messagesList.prepend(li);
+    });
+  </script>
+</body>
+</html>
